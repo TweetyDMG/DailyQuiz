@@ -17,11 +17,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.annotation.StringRes
+import com.example.dailyquiz.R
 import com.example.dailyquiz.domain.model.Question
 import com.example.dailyquiz.ui.theme.DailyQuizTheme
 
@@ -87,11 +90,11 @@ fun StyledStartScreen(onStartClick: () -> Unit, onNavigateToHistory: () -> Unit)
         ) {
             Icon(
                 Icons.Filled.History,
-                contentDescription = "История",
+                contentDescription = stringResource(R.string.history_title),
                 modifier = Modifier.size(20.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Text("История")
+            Text(stringResource(R.string.quiz_history))
         }
 
         Column(
@@ -102,7 +105,7 @@ fun StyledStartScreen(onStartClick: () -> Unit, onNavigateToHistory: () -> Unit)
                 .padding(horizontal = 32.dp)
         ) {
             Text(
-                text = "DAILYQUIZ",
+                text = stringResource(R.string.quiz_title),
                 color = MaterialTheme.colorScheme.onPrimary,
                 fontSize = 48.sp,
                 fontWeight = FontWeight.ExtraBold,
@@ -120,7 +123,7 @@ fun StyledStartScreen(onStartClick: () -> Unit, onNavigateToHistory: () -> Unit)
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Добро пожаловать в DailyQuiz!",
+                        text = stringResource(R.string.quiz_welcome),
                         style = MaterialTheme.typography.headlineMedium,
                         textAlign = TextAlign.Center,
                         fontWeight = FontWeight.Bold,
@@ -138,7 +141,7 @@ fun StyledStartScreen(onStartClick: () -> Unit, onNavigateToHistory: () -> Unit)
                         )
                     ) {
                         Text(
-                            text = "НАЧАТЬ ВИКТОРИНУ",
+                            text = stringResource(R.string.quiz_start).uppercase(),
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sp,
                             color = MaterialTheme.colorScheme.onSecondary
@@ -160,7 +163,7 @@ fun StyledLoadingScreen() {
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text = "DAILYQUIZ",
+                text = stringResource(R.string.quiz_title),
                 color = MaterialTheme.colorScheme.onPrimary,
                 fontSize = 48.sp,
                 fontWeight = FontWeight.ExtraBold,
@@ -196,10 +199,10 @@ fun StyledQuestionScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = onBack) {
-                Icon(Icons.Default.ArrowBack, contentDescription = "Назад", tint = MaterialTheme.colorScheme.onPrimary)
+                Icon(Icons.Default.ArrowBack, contentDescription = stringResource(R.string.details_back), tint = MaterialTheme.colorScheme.onPrimary)
             }
             Text(
-                text = "DAILYQUIZ",
+                text = stringResource(R.string.quiz_title),
                 color = MaterialTheme.colorScheme.onPrimary,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.ExtraBold,
@@ -231,7 +234,7 @@ fun StyledQuestionScreen(
         }
 
         Text(
-            text = "Вернуться к предыдущим вопросам нельзя",
+            text = stringResource(R.string.quiz_no_back),
             color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
             fontSize = 12.sp,
             modifier = Modifier
@@ -250,7 +253,7 @@ fun QuestionCardContent(
     val question = uiState.currentQuestion ?: return
     val isNextButtonEnabled = uiState.selectedAnswer.isNotEmpty()
     val isLastQuestion = uiState.currentQuestionIndex == uiState.questions.size - 1
-    val buttonText = if (isLastQuestion) "ЗАВЕРШИТЬ" else "ДАЛЕЕ"
+    val buttonText = if (isLastQuestion) stringResource(R.string.quiz_finish) else stringResource(R.string.quiz_next)
 
     Column(
         modifier = Modifier
@@ -258,7 +261,7 @@ fun QuestionCardContent(
             .padding(24.dp)
     ) {
         Text(
-            text = "Вопрос ${uiState.currentQuestionIndex + 1} из ${uiState.questions.size}",
+            text = stringResource(R.string.quiz_question_of, uiState.currentQuestionIndex + 1, uiState.questions.size),
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -341,7 +344,7 @@ fun ErrorScreen(message: String, onRetry: () -> Unit) {
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Ошибка",
+            text = stringResource(R.string.quiz_error_title),
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.error
         )
@@ -349,7 +352,7 @@ fun ErrorScreen(message: String, onRetry: () -> Unit) {
         Text(text = message, textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onSurface)
         Spacer(modifier = Modifier.height(16.dp))
         Button(onClick = onRetry) {
-            Text("Попробовать снова")
+            Text(stringResource(R.string.quiz_retry))
         }
     }
 }
@@ -365,7 +368,7 @@ fun ResultsScreen(uiState: QuizUiState, onRestart: () -> Unit) {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "Результаты",
+            text = stringResource(R.string.quiz_results_title),
             color = MaterialTheme.colorScheme.onPrimary,
             fontSize = 36.sp,
             fontWeight = FontWeight.ExtraBold,
@@ -408,7 +411,7 @@ fun ResultsScreen(uiState: QuizUiState, onRestart: () -> Unit) {
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "${uiState.score} из 5",
+                    text = stringResource(R.string.quiz_score, uiState.score),
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center
@@ -417,7 +420,7 @@ fun ResultsScreen(uiState: QuizUiState, onRestart: () -> Unit) {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
-                    text = resultInfo.first,
+                    text = stringResource(resultInfo.firstRes),
                     style = MaterialTheme.typography.displaySmall.copy(fontSize = 28.sp),
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface,
@@ -427,7 +430,7 @@ fun ResultsScreen(uiState: QuizUiState, onRestart: () -> Unit) {
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = resultInfo.second,
+                    text = stringResource(resultInfo.secondRes),
                     style = MaterialTheme.typography.bodyLarge.copy(fontSize = 16.sp),
                     color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center
@@ -447,7 +450,7 @@ fun ResultsScreen(uiState: QuizUiState, onRestart: () -> Unit) {
                     )
                 ) {
                     Text(
-                        text = "НАЧАТЬ ЗАНОВО",
+                        text = stringResource(R.string.quiz_restart).uppercase(),
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp
                     )
@@ -457,14 +460,19 @@ fun ResultsScreen(uiState: QuizUiState, onRestart: () -> Unit) {
     }
 }
 
-fun getResultInfo(score: Int): Pair<String, String> {
+data class ResultInfo(
+    @StringRes val firstRes: Int,
+    @StringRes val secondRes: Int
+)
+
+fun getResultInfo(score: Int): ResultInfo {
     return when (score) {
-        5 -> "Идеально!" to "5/5 — вы ответили на всё правильно. Это блестящий результат!"
-        4 -> "Почти идеально!" to "4/5 — очень близко к совершенству. Ещё один шаг!"
-        3 -> "Хороший результат!" to "3/5 — вы на верном пути. Продолжайте тренироваться!"
-        2 -> "Есть над чем поработать" to "2/5 — не расстраивайтесь, попробуйте ещё раз!"
-        1 -> "Сложный вопрос?" to "1/5 — иногда просто не ваш день. Следующая попытка будет лучше!"
-        else -> "Бывает и так!" to "0/5 — не отчаивайтесь. Начните заново и удивите себя!"
+        5 -> ResultInfo(R.string.result_perfect_title, R.string.result_perfect_message)
+        4 -> ResultInfo(R.string.result_almost_title, R.string.result_almost_message)
+        3 -> ResultInfo(R.string.result_good_title, R.string.result_good_message)
+        2 -> ResultInfo(R.string.result_work_title, R.string.result_work_message)
+        1 -> ResultInfo(R.string.result_hard_title, R.string.result_hard_message)
+        else -> ResultInfo(R.string.result_bad_title, R.string.result_bad_message)
     }
 }
 

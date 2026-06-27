@@ -4,6 +4,6 @@ data class Question(
     val questionText: String,
     val allAnswers: List<String>,
     val correctAnswer: String,
-    var userAnswer: String,
-    var isCorrect: Boolean
+    val userAnswer: String,
+    val isCorrect: Boolean
 )

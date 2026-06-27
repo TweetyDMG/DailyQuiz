@@ -1,112 +1,210 @@
-# DailyQuiz Android App
+# DailyQuiz — Android-приложение для ежедневных викторин
 
-## Обзор
+**DailyQuiz** — нативное Android-приложение на Kotlin и Jetpack Compose, которое загружает вопросы викторины из Open Trivia DB API, даёт пользователю пройти тест из 5 вопросов и сохраняет историю попыток локально. Проект демонстрирует Clean Architecture + MVVM с Hilt DI, Room, Retrofit и Navigation Compose.
 
-**DailyQuiz** — это Android-приложение, разработанное в рамках летней школы. Оно позволяет пользователям проходить ежедневные викторины, отслеживать свои результаты и анализировать прошлые попытки. Приложение использует **Open Trivia DB API** для получения вопросов.
+---
 
-Этот проект демонстрирует применение современных практик разработки под Android, включая чистую архитектуру (Clean Architecture), паттерн MVVM, асинхронное программирование с использованием Kotlin Coroutines и внедрение зависимостей с помощью Hilt.
+## 🛠 Технологический стек
 
-## Реализованные функции
+| Категория | Инструмент |
+|-----------|-----------|
+| **Язык** | Kotlin 2.2, JVM 17 |
+| **UI** | Jetpack Compose + Material Design 3 |
+| **Навигация** | Navigation Compose 2.9 |
+| **DI** | Dagger Hilt 2.57 |
+| **Сеть** | Retrofit 3.0 + OkHttp 5 + Gson |
+| **БД** | Room 2.7 (SQLite) |
+| **Асинхронность** | Kotlin Coroutines + StateFlow + Flow |
+| **Парсинг** | Jsoup 1.21 (очистка HTML-entities) |
+| **Сборка** | Gradle KTS, AGP 8.11, Version Catalog (libs.versions.toml) |
+| **Линтер** | ktlint (плагин org.jlleitschuh.gradle.ktlint) |
+| **CI** | GitHub Actions (build + lint + test) |
+| **minSdk / targetSdk / compileSdk** | API 26 / 35 / 35 |
 
-### Основной функционал
+---
 
-  - **Экран викторины:**
+## 🚀 Ключевой функционал
 
-      - Начальное состояние с приветствием и кнопкой "Начать викторину".
-      - Состояние загрузки с индикатором прогресса во время получения вопросов.
-      - Последовательное отображение 5 вопросов с вариантами ответов.
-      - Кнопка "Далее" активируется только после выбора ответа.
-      - Отображение итогового счета после завершения викторины.
-      - Сохранение каждой попытки в локальную базу данных.
-      - Персонализированные сообщения в зависимости от результата.
+- **Загрузка вопросов из API** — 5 вопросов с 4 вариантами ответов через Open Trivia DB, обработка сетевых ошибок
+- **Экран викторины** — старт → загрузка → 5 вопросов последовательно → результат с персонализированным сообщением
+- **Мгновенная обратная связь** — подсветка правильного/неправильного ответа перед переходом к следующему вопросу
+- **Сохранение истории** — каждая попытка пишется в Room (таблицы `quiz_attempts` + `questions`)
+- **Экран истории** — список попыток (дата, время, звёзды), удаление по долгому нажатию
+- **Экран разбора** — детальный просмотр ответов (зелёный ✅ = правильно, красный ❌ = ошибка пользователя)
+- **Тёмная тема** — автоматическое переключение по системной настройке, Dynamic Colors на Android 12+
+- **Очистка HTML** — экранированные символы (`&quot;`, `&#039;`) корректно отображаются через Jsoup
 
-  - **Экран истории:**
+---
 
-      - Отображение списка всех прошлых попыток викторины.
-      - Каждый элемент списка содержит дату, время и итоговый счет.
-      - Долгое нажатие на элемент открывает контекстное меню с опцией "Удалить".
-      - Уведомление (Toast) об успешном удалении попытки.
-      - Отображение сообщения, если история пуста.
+## 📁 Архитектура
 
-  - **Экран разбора викторины:**
+```
+app/src/main/java/com/example/dailyquiz/
+├── QuizApplication.kt          # @HiltAndroidApp
+├── di/
+│   └── AppModule.kt            # OkHttp, Retrofit, Room, Repository — все провайдеры
+│
+├── data/                       # 🔷 Data Layer
+│   ├── model/
+│   │   ├── ApiQuestion.kt      # DTO для API: QuizResponse, ApiQuestion (Gson)
+│   │   └── Entities.kt         # Room-сущности + отношение attempt→questions
+│   ├── mappers/
+│   │   └── Mappers.kt          # ApiQuestion → domain.Question, Entity ↔ Domain
+│   ├── repository/
+│   │   └── QuizRepositoryImpl.kt
+│   └── source/
+│       ├── local/              # QuizDatabase, QuizDao, Converters
+│       └── remote/             # ApiService (Retrofit-интерфейс)
+│
+├── domain/                     # 🔶 Domain Layer (чистый Kotlin, без Android)
+│   ├── model/
+│   │   ├── Question.kt         # Вопрос: текст, ответы, результат
+│   │   └── QuizAttempt.kt      # Попытка: id, timestamp, score, questions
+│   ├── repository/
+│   │   └── QuizRepository.kt   # Интерфейс репозитория
+│   └── use_case/               # 5 use cases: GetNew, Save, GetHistory,
+│       └── ...                 #   GetAttemptDetails, DeleteAttempt
+│
+├── ui/                         # 🎨 Presentation Layer
+│   ├── MainActivity.kt         # Single Activity, @AndroidEntryPoint
+│   ├── theme/                  # Material 3: colors, typography, theme
+│   ├── navigation/
+│   │   ├── Screen.kt           # Sealed class: Quiz, History, Details
+│   │   └── AppNavigation.kt    # NavHost (3 composable-маршрута)
+│   └── screens/
+│       ├── quiz/               # QuizScreen + QuizViewModel (6 состояний UI)
+│       ├── history/            # HistoryScreen + HistoryViewModel
+│       └── details/            # DetailsScreen + DetailsViewModel
+│
+└── util/
+    └── Resource.kt             # Sealed class: Success<T> / Error<T>
+```
 
-      - Детальный просмотр всех вопросов и ответов для выбранной попытки.
-      - Визуальная индикация правильных (✅) и неправильных (❌) ответов.
-      - Подсветка ответов:
-          - **Зеленый:** Правильный ответ.
-          - **Красный:** Выбранный неверный ответ.
-          - **Стандартный:** Остальные неверные ответы.
+### Схема БД
 
-### Дополнительные функции
+```
+┌──────────────────────┐       ┌──────────────────────────────┐
+│    quiz_attempts     │       │          questions           │
+├──────────────────────┤       ├──────────────────────────────┤
+│ id : INTEGER (PK)   │──┐    │ id : INTEGER (PK)            │
+│ timestamp : INTEGER │  │    │ attemptId : INTEGER (FK)     │
+│ score : INTEGER     │  └───→│ questionText : TEXT           │
+└──────────────────────┘       │ allAnswers : TEXT (CSV)      │
+                               │ correctAnswer : TEXT         │
+                               │ userAnswer : TEXT            │
+                               │ isCorrect : INTEGER (0/1)    │
+                               └──────────────────────────────┘
+```
 
-  - **Подсветка ответов в реальном времени:** После выбора ответа и нажатия "Далее", пользователь сразу видит, был ли его ответ верным (зеленая подсветка) или неверным (красная подсветка), прежде чем перейти к следующему вопросу. Это улучшает вовлеченность и процесс обучения.
-  - **Анимации переходов:** Плавные и современные анимации переходов между экранами, реализованные с помощью `Navigation Component`.
+---
 
-## Архитектура
+## 💻 Локальное развертывание
 
-Проект построен на основе **Чистой архитектуры (Clean Architecture)** с использованием паттерна **MVVM**. Это разделяет код на логические слои, делая его более гибким, масштабируемым и простым для тестирования.
+### Требования
 
-### Слои
+- **Android Studio** Iguana (2023.2+) или новее
+- **JDK 17+** (рекомендуется 17 или 21)
+- **Android SDK** API 35
+- Физическое устройство или эмулятор с API 26+
 
-  - **Data Layer (Слой данных):**
+### Быстрый старт
 
-      - **Источники данных:** `RemoteDataSource` (для работы с Retrofit и Open Trivia DB API) и `LocalDataSource` (для работы с Room).
-      - **Repository:** `QuizRepositoryImpl` реализует интерфейс из доменного слоя и служит единой точкой входа для получения данных, координируя работу с локальным и удаленным источниками.
-      - **Mappers:** Классы для преобразования DTO (Data Transfer Objects) из API и сущностей базы данных (Entities) в доменные модели и обратно.
+```bash
+# 1. Клонировать
+git clone https://github.com/<your-org>/DailyQuiz.git
+cd DailyQuiz
 
-  - **Domain Layer (Доменный слой):**
+# 2. Открыть в Android Studio
+#    File → Open → DailyQuiz
 
-      - **Models:** Простые Kotlin-классы (`QuizAttempt`, `Question`), которые представляют основные сущности бизнес-логики. Этот слой не зависит от деталей реализации Android.
-      - **Repository Interface:** Определяет контракт (`QuizRepository`), которому должен следовать слой данных.
-      - **Use Cases (Interactors):** Классы, инкапсулирующие конкретные бизнес-правила (например, `StartQuizUseCase`, `GetHistoryUseCase`, `DeleteAttemptUseCase`). Они вызываются из ViewModel.
+# 3. Дождаться синхронизации Gradle
+#    Все зависимости подтянутся автоматически из version catalog
 
-  - **Presentation Layer (Слой представления):**
+# 4. Запустить
+#    Выбрать target device → Run (▶)
+```
 
-      - **UI (Fragments & Jetpack Compose):** Экраны реализованы с использованием Fragments и **Jetpack Compose**. Compose используется для построения современного и декларативного UI.
-      - **ViewModel:** Классы (`QuizViewModel`, `HistoryViewModel`, `DetailsViewModel`), которые содержат логику UI и управляют его состоянием. Они взаимодействуют с доменным слоем через Use Cases.
-      - **State:** Состояние UI управляется с помощью `StateFlow`, что обеспечивает реактивное обновление интерфейса.
-      - **Navigation:** Навигация между экранами реализована с помощью **Jetpack Navigation Component**.
+### Gradle-команды
 
-## Технологический стек и зависимости
+```bash
+./gradlew assembleDebug           # debug APK
+./gradlew assembleRelease         # release APK (с ProGuard/R8)
+./gradlew lint                    # статический анализ (Android Lint)
+./gradlew ktlintCheck             # проверка форматирования Kotlin
+./gradlew test                    # unit-тесты
+./gradlew connectedAndroidTest    # instrumented-тесты (требуется устройство)
+```
 
-  - **Язык:** Kotlin
-  - **Архитектура:** Clean Architecture, MVVM
-  - **Асинхронность:** Kotlin Coroutines
-  - **UI:** Jetpack Compose с Material Design 3
-  - **Внедрение зависимостей:** Hilt
-  - **Сеть:** Retrofit 2 & OkHttp 3
-  - **Парсинг JSON:** Gson
-  - **База данных:** Room
-  - **Навигация:** Jetpack Navigation Component
-  - **Жизненный цикл:** Lifecycle Components (ViewModel, LiveData/Flow)
+### Настройка
 
-## Инструкции по запуску
+Приложение использует публичный API [Open Trivia DB](https://opentdb.com/) — **ключи не требуются**. Просто соберите и запустите.
 
-1.  **Клонируйте репозиторий:**
-    ```bash
-    git clone <URL_ВАШЕГО_РЕПОЗИТОРИЯ>
-    ```
-2.  Откройте проект в **Android Studio** (версия Iguana или новее рекомендуется).
-3.  Синхронизируйте проект с файлами Gradle. Hilt настроит все необходимые зависимости.
-4.  Соберите и запустите приложение на эмуляторе или физическом устройстве (API 26+).
+Базовый URL логирования HTTP настраиваются через `BuildConfig`:
+- `BuildConfig.BASE_URL` — endpoint API
+- `BuildConfig.LOG_HTTP` — флаг body-логирования OkHttp (`true` в debug, `false` в release)
 
-> Приложение не требует ключей API и готово к работе сразу после сборки.
+---
 
-## Тестирование
+## 🔌 API
 
-Для проверки корректности работы приложения:
+### Внешний API (Open Trivia DB)
 
-### Успешный сценарий:
+| Метод | Эндпоинт | Описание |
+|-------|----------|---------|
+| GET | `/api.php?amount=5&type=multiple` | Загрузить 5 вопросов с 4 вариантами |
 
-  - Нажмите "Начать викторину". Убедитесь, что отображается индикатор загрузки, а затем появляется первый вопрос.
-  - Пройдите викторину до конца. Проверьте, что результат сохраняется и отображается на экране истории.
-  - Перейдите на экран разбора и убедитесь, что все ответы подсвечены корректно.
+### Внутренняя навигация (Compose)
 
-### Сценарий ошибки:
+| Route | Экран | Вход |
+|-------|-------|------|
+| `quiz_screen` (start) | Викторина | Стартовый экран приложения |
+| `history_screen` | История попыток | Кнопка «История» |
+| `details_screen/{attemptId}` | Разбор ответов | Tap по элементу истории |
 
-  - Отключите интернет-соединение на устройстве.
-  - Нажмите "Начать викторину". Приложение должно показать сообщение об ошибке, а кнопка должна снова стать активной.
+> Swagger/OpenAPI-спецификация не предусмотрена — собственного бэкенда нет.
 
-### Пустое состояние истории:
+---
 
-  - Удалите все попытки из истории. Убедитесь, что на экране истории отображается сообщение "Вы еще не проходили ни одной викторины."
+## 🧪 Тестирование
+
+Unit-тесты (`test`):
+- `MappersTest` — маппинг API-ответов с HTML-entities, корректность перемешивания ответов
+- `ConvertersTest` — сериализация/десериализация List<String> через Room TypeConverter
+- `QuizViewModelTest` — проверка всех состояний (START → LOADING → IN_PROGRESS → RESULTS/ERROR), подсчёт баллов, сброс
+- `ResourceTest` — корректность sealed class Resource
+
+```bash
+./gradlew test                     # все unit-тесты
+./gradlew test --tests *.Mappers*  # конкретный класс
+```
+
+---
+
+## 📄 Code & Structure Review (проделанные улучшения)
+
+- ✅ Исправлен `.gitignore` — добавлены `.kotlin/`, `.idea/`, `*.hprof`, `*.log`, `*.apk`, `*.aab`
+- ✅ Удалены из git-трекинга `.idea/` и `.kotlin/errors/`
+- ✅ Все строки UI вынесены в `strings.xml` (ранее были хардкодом в Compose)
+- ✅ Настроен ProGuard/R8 — `keep` для Hilt, Retrofit, Room, Gson, моделей
+- ✅ Выключено body-логирование OkHttp в release (через `BuildConfig.LOG_HTTP`)
+- ✅ BASE_URL вынесен в `buildConfigField`
+- ✅ Добавлен `fallbackToDestructiveMigration()` для Room
+- ✅ Переименован `ui/Theme/` → `ui/theme/` (соблюдение Kotlin naming convention)
+- ✅ Доменные модели Question сделаны иммутабельными (`val` вместо `var`)
+- ✅ Gson в Room TypeConverters заменён на `joinToString`/`split`
+- ✅ Добавлен `.editorconfig` (стиль кода, charset, end-of-line)
+- ✅ Добавлен GitHub Actions CI (сборка + ktlint + тесты)
+- ✅ Добавлен ktlint (плагин org.jlleitschuh.gradle.ktlint)
+- ✅ Написаны unit-тесты (Mappers, Converters, QuizViewModel, Resource)
+
+---
+
+## 🤝 Вклад
+
+Pull Request’ы приветствуются. Стандартный GitHub Flow:
+
+1. Fork
+2. `git checkout -b feature/your-feature`
+3. Внести изменения
+4. `./gradlew ktlintCheck test` — проверить стиль и тесты
+5. Открыть PR в `master`

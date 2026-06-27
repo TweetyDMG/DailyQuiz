@@ -4,6 +4,7 @@ plugins {
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android") version "2.57"
     id("org.jetbrains.kotlin.plugin.compose") version "2.2.0"
+    id("org.jlleitschuh.gradle.ktlint") version "12.2.0"
 }
 
 android {
@@ -24,9 +25,17 @@ android {
     }
 
     buildTypes {
-        release {
+        debug {
+            buildConfigField("String", "BASE_URL", "\"https://opentdb.com/\"")
+            buildConfigField("boolean", "LOG_HTTP", "true")
             isMinifyEnabled = false
+        }
+        release {
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            buildConfigField("String", "BASE_URL", "\"https://opentdb.com/\"")
+            buildConfigField("boolean", "LOG_HTTP", "false")
         }
     }
     compileOptions {
@@ -40,6 +49,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     packaging {
         resources {
@@ -94,6 +104,9 @@ dependencies {
 
     // Testing
     testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.turbine)
+    testImplementation(libs.mockk)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -104,4 +117,10 @@ dependencies {
 
 kapt {
     correctErrorTypes = true
+}
+
+ktlint {
+    filter {
+        exclude { entry -> entry.file.path.contains("build/generated/") }
+    }
 }

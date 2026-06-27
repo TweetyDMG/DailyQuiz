@@ -1,17 +1,38 @@
 package com.example.dailyquiz
 
+import com.example.dailyquiz.util.Resource
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Test
 
-import org.junit.Assert.*
+class ResourceTest {
 
-/**
- * Example local unit test, which will execute on the development machine (host).
- *
- * See [testing documentation](http://d.android.com/tools/testing).
- */
-class ExampleUnitTest {
     @Test
-    fun addition_isCorrect() {
-        assertEquals(4, 2 + 2)
+    fun `success holds data`() {
+        val resource = Resource.Success(listOf("a", "b"))
+        assertEquals(listOf("a", "b"), resource.data)
+        assertNull(resource.message)
+    }
+
+    @Test
+    fun `error holds message and optional data`() {
+        val resource = Resource.Error<String>("Something went wrong")
+        assertEquals("Something went wrong", resource.message)
+        assertNull(resource.data)
+    }
+
+    @Test
+    fun `error with data`() {
+        val resource = Resource.Error("error", listOf("a"))
+        assertEquals(listOf("a"), resource.data)
+        assertEquals("error", resource.message)
+    }
+
+    @Test
+    fun `success data is accessible`() {
+        val resource = Resource.Success(42)
+        assertNotNull(resource.data)
+        assertEquals(42, resource.data)
     }
 }

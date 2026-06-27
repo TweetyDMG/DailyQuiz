@@ -18,10 +18,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.dailyquiz.R
 import com.example.dailyquiz.domain.model.Question
 import com.example.dailyquiz.ui.theme.DailyQuizTheme
 
@@ -46,7 +48,7 @@ fun DetailsScreen(
             ) {
                 Icon(
                     Icons.Default.ArrowBack,
-                    contentDescription = "Назад",
+                    contentDescription = stringResource(R.string.details_back),
                     tint = MaterialTheme.colorScheme.onPrimary
                 )
             }
@@ -58,7 +60,7 @@ fun DetailsScreen(
                 )
             } else if (uiState.attempt == null) {
                 Text(
-                    text = "Не удалось загрузить детали.",
+                    text = stringResource(R.string.details_error),
                     modifier = Modifier.align(Alignment.Center),
                     color = MaterialTheme.colorScheme.onPrimary
                 )
@@ -90,7 +92,7 @@ fun StyledQuestionReviewItem(question: Question, questionNumber: Int, totalQuest
     ) {
         Column(modifier = Modifier.padding(24.dp)) {
             Text(
-                text = "Вопрос $questionNumber из $totalQuestions",
+                text = stringResource(R.string.details_question_of, questionNumber, totalQuestions),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -127,10 +129,10 @@ fun StyledQuestionReviewItem(question: Question, questionNumber: Int, totalQuest
 
                 val resultIcon: (@Composable () -> Unit)? = when {
                     isCorrectAnswer -> {
-                        { Icon(Icons.Default.Check, contentDescription = "Правильный ответ", tint = Color(0xFF4CAF50)) }
+                        { Icon(Icons.Default.Check, contentDescription = stringResource(R.string.details_correct), tint = Color(0xFF4CAF50)) }
                     }
                     isUserWrongAnswer -> {
-                        { Icon(Icons.Default.Close, contentDescription = "Неправильный ответ", tint = Color(0xFFF44336)) }
+                        { Icon(Icons.Default.Close, contentDescription = stringResource(R.string.details_wrong), tint = Color(0xFFF44336)) }
                     }
                     else -> null
                 }

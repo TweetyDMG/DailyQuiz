@@ -16,10 +16,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.dailyquiz.R
 import com.example.dailyquiz.domain.model.QuizAttempt
 import com.example.dailyquiz.ui.theme.DailyQuizTheme
 import java.text.SimpleDateFormat
@@ -37,19 +39,19 @@ fun HistoryScreen(
         if (uiState.showDeleteConfirmDialog) {
             AlertDialog(
                 onDismissRequest = { viewModel.onDeleteDialogDismissed() },
-                title = { Text("Удалить попытку?") },
-                text = { Text("Вы уверены, что хотите удалить эту запись? Это действие нельзя будет отменить.") },
+                title = { Text(stringResource(R.string.history_delete_title)) },
+                text = { Text(stringResource(R.string.history_delete_message)) },
                 confirmButton = {
                     TextButton(onClick = {
                         viewModel.deleteAttempt()
                         longPressedItemId = null
                     }) {
-                        Text("Удалить")
+                        Text(stringResource(R.string.history_delete))
                     }
                 },
                 dismissButton = {
                     TextButton(onClick = { viewModel.onDeleteDialogDismissed() }) {
-                        Text("Отмена")
+                        Text(stringResource(R.string.history_cancel))
                     }
                 }
             )
@@ -62,7 +64,7 @@ fun HistoryScreen(
                 shape = RoundedCornerShape(28.dp),
                 title = {
                     Text(
-                        text = "Попытка удалена",
+                        text = stringResource(R.string.history_deleted_title),
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center,
                         fontWeight = FontWeight.Bold,
@@ -72,7 +74,7 @@ fun HistoryScreen(
                 },
                 text = {
                     Text(
-                        text = "Вы можете пройти викторину снова, когда будете готовы.",
+                        text = stringResource(R.string.history_deleted_message),
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center,
                         fontSize = 16.sp,
@@ -86,7 +88,7 @@ fun HistoryScreen(
                     ) {
                         TextButton(onClick = { viewModel.onDeletionSuccessDialogDismissed() }) {
                             Text(
-                                "ЗАКРЫТЬ",
+                                stringResource(R.string.history_close),
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.primary,
                                 fontSize = 14.sp
@@ -104,7 +106,7 @@ fun HistoryScreen(
         ) {
             Column {
                 Text(
-                    text = "История",
+                    text = stringResource(R.string.history_title),
                     fontSize = 32.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onPrimary,
@@ -120,7 +122,7 @@ fun HistoryScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "История пока пуста",
+                            text = stringResource(R.string.history_empty),
                             style = MaterialTheme.typography.headlineSmall,
                             color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f) // Текст на фоне
                         )
@@ -208,7 +210,7 @@ fun HistoryItem(
                     horizontalAlignment = Alignment.Start
                 ) {
                     Text(
-                        text = "Quiz ${index + 1}",
+                        text = stringResource(R.string.history_quiz_n, index + 1),
                         fontSize = 22.sp,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface
@@ -256,11 +258,11 @@ fun HistoryItem(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             imageVector = Icons.Default.Delete,
-                            contentDescription = "Удалить",
+                            contentDescription = stringResource(R.string.history_delete),
                             tint = MaterialTheme.colorScheme.error
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Удалить", color = MaterialTheme.colorScheme.error)
+                        Text(stringResource(R.string.history_delete), color = MaterialTheme.colorScheme.error)
                     }
                 },
                 onClick = {

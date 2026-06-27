@@ -2,7 +2,9 @@ package com.example.dailyquiz.di
 
 import android.content.Context
 import androidx.room.Room
+import com.example.dailyquiz.BuildConfig
 import com.example.dailyquiz.data.repository.QuizRepositoryImpl
+import com.example.dailyquiz.data.source.local.QuizDao
 import com.example.dailyquiz.data.source.local.QuizDatabase
 import com.example.dailyquiz.data.source.remote.ApiService
 import com.example.dailyquiz.domain.repository.QuizRepository
@@ -15,6 +17,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @Module
@@ -25,8 +28,14 @@ object AppModule {
     @Singleton
     fun provideOkHttpClient(): OkHttpClient {
         return OkHttpClient.Builder()
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
             .addInterceptor(HttpLoggingInterceptor().apply {
-                level = HttpLoggingInterceptor.Level.BODY
+                level = if (BuildConfig.LOG_HTTP) {
+                    HttpLoggingInterceptor.Level.BODY
+                } else {
+                    HttpLoggingInterceptor.Level.NONE
+                }
             })
             .build()
     }
@@ -35,7 +44,7 @@ object AppModule {
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://opentdb.com/")
+            .baseUrl(BuildConfig.BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -54,18 +63,18 @@ object AppModule {
             context,
             QuizDatabase::class.java,
             "quiz_database"
-        ).build()
+        ).fallbackToDestructiveMigration().build()
     }
 
     @Provides
     @Singleton
-    fun provideQuizDao(database: QuizDatabase) = database.quizDao()
+    fun provideQuizDao(database: QuizDatabase): QuizDao = database.quizDao()
 
     @Provides
     @Singleton
     fun provideQuizRepository(
         apiService: ApiService,
-        quizDao: com.example.dailyquiz.data.source.local.QuizDao
+        quizDao: QuizDao
     ): QuizRepository {
         return QuizRepositoryImpl(apiService, quizDao)
     }

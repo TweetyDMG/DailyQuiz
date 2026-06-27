@@ -1,18 +1,21 @@
 package com.example.dailyquiz.data.source.local
 
 import androidx.room.TypeConverter
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 
 class Converters {
+
+    companion object {
+        private const val DELIMITER = "␟"
+    }
+
     @TypeConverter
     fun fromStringList(value: List<String>): String {
-        return Gson().toJson(value)
+        return value.joinToString(DELIMITER)
     }
 
     @TypeConverter
     fun toStringList(value: String): List<String> {
-        val listType = object : TypeToken<List<String>>() {}.type
-        return Gson().fromJson(value, listType)
+        if (value.isEmpty()) return emptyList()
+        return value.split(DELIMITER)
     }
 }

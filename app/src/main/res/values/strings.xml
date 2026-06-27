@@ -1,3 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">DailyQuiz</string>
+
+    <!-- Экран викторины -->
+    <string name="quiz_title">DAILYQUIZ</string>
+    <string name="quiz_welcome">Добро пожаловать в DailyQuiz!</string>
+    <string name="quiz_start">Начать викторину</string>
+    <string name="quiz_question_of">Вопрос %1$d из %2$d</string>
+    <string name="quiz_next">Далее</string>
+    <string name="quiz_finish">Завершить</string>
+    <string name="quiz_no_back">Вернуться к предыдущим вопросам нельзя</string>
+    <string name="quiz_history">История</string>
+    <string name="quiz_error_title">Ошибка</string>
+    <string name="quiz_error_unknown">Неизвестная ошибка</string>
+    <string name="quiz_retry">Попробовать снова</string>
+    <string name="quiz_results_title">Результаты</string>
+    <string name="quiz_score">%d из 5</string>
+    <string name="quiz_restart">Начать заново</string>
+
+    <!-- Результаты (0-5) -->
+    <string name="result_perfect_title">Идеально!</string>
+    <string name="result_perfect_message">5/5 — вы ответили на всё правильно. Это блестящий результат!</string>
+    <string name="result_almost_title">Почти идеально!</string>
+    <string name="result_almost_message">4/5 — очень близко к совершенству. Ещё один шаг!</string>
+    <string name="result_good_title">Хороший результат!</string>
+    <string name="result_good_message">3/5 — вы на верном пути. Продолжайте тренироваться!</string>
+    <string name="result_work_title">Есть над чем поработать</string>
+    <string name="result_work_message">2/5 — не расстраивайтесь, попробуйте ещё раз!</string>
+    <string name="result_hard_title">Сложный вопрос?</string>
+    <string name="result_hard_message">1/5 — иногда просто не ваш день. Следующая попытка будет лучше!</string>
+    <string name="result_bad_title">Бывает и так!</string>
+    <string name="result_bad_message">0/5 — не отчаивайтесь. Начните заново и удивите себя!</string>
+
+    <!-- Экран истории -->
+    <string name="history_title">История</string>
+    <string name="history_empty">История пока пуста</string>
+    <string name="history_quiz_n">Quiz %d</string>
+    <string name="history_delete_title">Удалить попытку?</string>
+    <string name="history_delete_message">Вы уверены, что хотите удалить эту запись? Это действие нельзя будет отменить.</string>
+    <string name="history_delete">Удалить</string>
+    <string name="history_cancel">Отмена</string>
+    <string name="history_deleted_title">Попытка удалена</string>
+    <string name="history_deleted_message">Вы можете пройти викторину снова, когда будете готовы.</string>
+    <string name="history_close">Закрыть</string>
+
+    <!-- Общие -->
+    <string name="details_back">Назад</string>
+
+    <!-- Экран разбора -->
+    <string name="details_loading">Загрузка...</string>
+    <string name="details_error">Не удалось загрузить детали.</string>
+    <string name="details_question_of">Вопрос %1$d из %2$d</string>
+    <string name="details_correct">Правильный ответ</string>
+    <string name="details_wrong">Неправильный ответ</string>
 </resources>
