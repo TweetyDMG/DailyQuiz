@@ -180,22 +180,10 @@ Unit-тесты (`test`):
 
 ---
 
-## 📄 Code & Structure Review (проделанные улучшения)
+## 📄 Авторы и лицензия
 
-- ✅ Исправлен `.gitignore` — добавлены `.kotlin/`, `.idea/`, `*.hprof`, `*.log`, `*.apk`, `*.aab`
-- ✅ Удалены из git-трекинга `.idea/` и `.kotlin/errors/`
-- ✅ Все строки UI вынесены в `strings.xml` (ранее были хардкодом в Compose)
-- ✅ Настроен ProGuard/R8 — `keep` для Hilt, Retrofit, Room, Gson, моделей
-- ✅ Выключено body-логирование OkHttp в release (через `BuildConfig.LOG_HTTP`)
-- ✅ BASE_URL вынесен в `buildConfigField`
-- ✅ Добавлен `fallbackToDestructiveMigration()` для Room
-- ✅ Переименован `ui/Theme/` → `ui/theme/` (соблюдение Kotlin naming convention)
-- ✅ Доменные модели Question сделаны иммутабельными (`val` вместо `var`)
-- ✅ Gson в Room TypeConverters заменён на `joinToString`/`split`
-- ✅ Добавлен `.editorconfig` (стиль кода, charset, end-of-line)
-- ✅ Добавлен GitHub Actions CI (сборка + ktlint + тесты)
-- ✅ Добавлен ktlint (плагин org.jlleitschuh.gradle.ktlint)
-- ✅ Написаны unit-тесты (Mappers, Converters, QuizViewModel, Resource)
+Автор: Рогачев Артем Юрьевич
+Лицензия: MIT
 
 ---
 
